@@ -54,7 +54,7 @@ def deploy_new_container(image_name: str, container_name: str, ports: dict = Non
 
 @app.get('/')
 async def list_containers(token=Header(None)):
-    if not secrets.compare_digest(token, TOKEN):
+    if token is None or not secrets.compare_digest(token, TOKEN):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='access denied: invalid token')
     return get_active_containers()
 
