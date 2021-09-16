@@ -29,23 +29,20 @@ def get_active_containers():
     ]
 
 
-def stop_container(container_name: str) -> bool:
+def stop_container(container_name: str):
     try:
         docker_client.containers.get(container_name).stop()
     except Exception as e:
-        print(f'Error while delete container {container_name}, {e}')
-        return False
-    print(f'Container deleted. container_name = {container_name}')
-    return True
+        print(f'error while stop container {container_name}, {e}')
+    print(f'container stopped {container_name}')
 
 
 def deploy_new_container(image: str, container_name: str, ports: dict = None):
     try:
         print(f'pull {image}, name={container_name}')
         docker_client.images.pull(image)
-        print('success')
+        print('pull success')
         stop_container(container_name)
-        print('old stopped')
         docker_client.containers.run(image=image, detach=True, remove=True, ports=ports, name=container_name)
     except Exception as e:
         print(f'Error while deploy container {container_name}, \n{e}')
