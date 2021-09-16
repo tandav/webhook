@@ -1,10 +1,12 @@
 import secrets
+from typing import Optional
 
 import docker
 from fastapi import FastAPI
 from fastapi import Header
 from fastapi import HTTPException
 from fastapi import status
+from pydantic import BaseModel
 
 from credentials import TOKEN
 
@@ -36,15 +38,14 @@ def stop_container(container_name: str) -> bool:
     return True
 
 
-def deploy_new_container(image_name: str, container_name: str, ports: dict = None):
-
+def deploy_new_container(image: str, container_name: str, ports: dict = None):
     try:
-        print(f'pull {image_name}, name={container_name}')
-        docker_client.images.pull(image_name)
+        print(f'pull {image}, name={container_name}')
+        docker_client.images.pull(image)
         print('success')
         stop_container(container_name)
         print('old stopped')
-        docker_client.containers.run(image=image_name, name=container_name, detach=True, ports=ports)
+        docker_client.containers.run(image=image, name=container_name, detach=True, ports=ports)
     except Exception as e:
         print(f'Error while deploy container {container_name}, \n{e}')
         return {'status': 'error', 'exception': str(e)}
@@ -59,8 +60,15 @@ async def list_containers(token=Header(None)):
     return get_active_containers()
 
 
+class Container(BaseModel):
+    username: Optional[str] = None
+    repository: str
+    tag: Optional[str] = None
+    ports: Optional[dict[int, int]] = None
+
+
 @app.post('/')
-async def deploy_container(token=Header(None)):
+async def deploy_container(container: Container, token=Header(None)):
     """
     example body:
     {
@@ -72,5 +80,14 @@ async def deploy_container(token=Header(None)):
     """
     if not secrets.compare_digest(token, TOKEN):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='access denied: invalid token')
-    # return deploy_new_container()
-    return {'status': 'not_implemented'}
+
+    container_name = container.repository
+
+    if container.username and container.tag:
+        image = f'{container.username}/{container.repository}:{container.tag}',
+
+    else:
+        image = container.repository
+        if container.tag:
+            image += ':' + container.tag
+    return deploy_new_container(image, container_name)
