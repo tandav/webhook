@@ -1,5 +1,6 @@
 import secrets
 from typing import Optional
+from typing import Dict
 
 import docker
 from fastapi import FastAPI
@@ -64,7 +65,7 @@ class Container(BaseModel):
     username: Optional[str] = None
     repository: str
     tag: Optional[str] = None
-    ports: Optional[dict[int, int]] = None
+    ports: Optional[Dict[int, int]] = None
 
 
 @app.post('/')
