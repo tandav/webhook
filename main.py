@@ -52,14 +52,14 @@ def deploy_new_container(image_name: str, container_name: str, ports: dict = Non
     return {'status': 'success'}
 
 
-@app.get("/")
+@app.get('/')
 async def list_containers(token=Header(None)):
     if not secrets.compare_digest(token, TOKEN):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='access denied: invalid token')
     return get_active_containers()
 
 
-@app.post("/")
+@app.post('/')
 async def deploy_container(token=Header(None)):
     """
     example body:
@@ -72,4 +72,5 @@ async def deploy_container(token=Header(None)):
     """
     if not secrets.compare_digest(token, TOKEN):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='access denied: invalid token')
-    return deploy_new_container()
+    # return deploy_new_container()
+    return {'status': 'not_implemented'}
