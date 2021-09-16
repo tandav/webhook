@@ -46,7 +46,7 @@ def deploy_new_container(image: str, container_name: str, ports: dict = None):
         print('success')
         stop_container(container_name)
         print('old stopped')
-        docker_client.containers.run(image=image, name=container_name, detach=True, ports=ports)
+        docker_client.containers.run(image=image, detach=True, remove=True, ports=ports, name=container_name)
     except Exception as e:
         print(f'Error while deploy container {container_name}, \n{e}')
         return {'status': 'error', 'exception': str(e)}
