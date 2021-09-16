@@ -37,6 +37,7 @@ def stop_container(container_name: str) -> bool:
 
 
 def deploy_new_container(image_name: str, container_name: str, ports: dict = None):
+
     try:
         print(f'pull {image_name}, name={container_name}')
         docker_client.images.pull(image_name)
@@ -58,8 +59,17 @@ async def list_containers(token=Header(None)):
     return get_active_containers()
 
 
-@app.get("/")
+@app.post("/")
 async def deploy_container(token=Header(None)):
+    """
+    example body:
+    {
+        'username': 'admin',
+        'repository': 'hello_world',
+        'tag': '0.0.1',
+        'ports': {8080': 8080, 443: 443},
+    }
+    """
     if not secrets.compare_digest(token, TOKEN):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='access denied: invalid token')
-    return {'response': 'hello', 'token': token}
+    return deploy_new_container()
