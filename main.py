@@ -83,12 +83,7 @@ async def deploy_container(container: Container, token=Header(None)):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='access denied: invalid token')
 
     container_name = container.repository
-
-    if container.username and container.tag:
-        image = f'{container.username}/{container.repository}:{container.tag}',
-
-    else:
-        image = container.repository
-        if container.tag:
-            image += ':' + container.tag
+    image = f'{container.username}/{container.repository}' if container.username else container.repository
+    if container.tag:
+        image += ':' + container.tag
     return deploy_new_container(image, container_name)
