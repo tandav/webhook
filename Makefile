@@ -1,5 +1,6 @@
 run:
-	uvicorn server:app --host 0.0.0.0 --port 8090 --limit-concurrency 2 --ssl-keyfile privkey.pem --ssl-certfile fullchain.pem
+	sh listen.sh &
+	docker run --pull=always --rm -it -v $$PWD/config.py:/app/config.py -v $$PWD/listen.sh:/app.listen.sh -p 8090:8090 tandav/webhook
 
 install_deps:
 	apt update
