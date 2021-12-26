@@ -1,5 +1,6 @@
 run:
-	uvicorn server:app --host 0.0.0.0 --port 8090 --limit-concurrency 2 --ssl-keyfile privkey.pem --ssl-certfile fullchain.pem
+	#uvicorn server:app --host 0.0.0.0 --port 8090 --limit-concurrency 2 --ssl-keyfile privkey.pem --ssl-certfile fullchain.pem
+	uvicorn server:app --host 0.0.0.0 --port 8090 --limit-concurrency 2
 
 install_deps:
 	apt update
