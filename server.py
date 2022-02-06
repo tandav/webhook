@@ -11,6 +11,11 @@ from credentials import TOKEN, COMMAND, CWD
 app = FastAPI()
 
 
+@app.get('/')
+def health():
+    return {'status': 'success'}
+
+
 @app.post('/')
 def run(token=Header(None)):
     if not secrets.compare_digest(token, TOKEN):
